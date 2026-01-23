@@ -1,0 +1,435 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx,xcolor,titling,listings}
+\definecolor{linkblue}{rgb}{0.2, 0.4, 0.65}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=linkblue,citecolor=black]{hyperref}
+
+% Subtitle support
+\newcommand{\subtitle}[1]{\gdef\thesubtitle{#1}}
+\newcommand{\thesubtitle}{}
+\pretitle{\begin{center}\LARGE\bfseries}
+\posttitle{\\[0.5em]\large\itshape\bfseries\thesubtitle\end{center}}
+\preauthor{\begin{center}}
+\postauthor{\end{center}}
+\predate{\begin{center}}
+\postdate{\end{center}}
+
+% Page layout
+\setlength{\textwidth}{150mm}
+\setlength{\textheight}{220mm}
+\setlength{\oddsidemargin}{5mm}
+\setlength{\topmargin}{-10mm}
+
+% Python code formatting
+\definecolor{slateblue}{rgb}{0.3, 0.4, 0.5}
+\definecolor{mediumviolet-red}{rgb}{0.78, 0.08, 0.52}
+\definecolor{commentgray}{rgb}{0.5, 0.5, 0.5}
+
+\lstdefinelanguage{mypython}
+{
+	keywords=[1]{from, import, assert, not, print, for, in, if, else, elif, return, def, class, with, as, try, except, raise, while, break, continue, pass, lambda, yield},
+	keywordstyle=[1]{\color{mediumviolet-red}},
+	keywords=[2]{marimo, mo, np, numpy, matplotlib, plt, pyplot},
+	keywordstyle=[2]{\color{slateblue}},
+	comment=[l]{\#},
+	morestring=[b]{"""},
+	morestring=[b]{'''},
+	morestring=[b]{"},
+	morestring=[b]{'},
+	commentstyle=\color{commentgray}\itshape,
+	stringstyle=\color{commentgray},
+	numbers=right,
+	numberstyle=\tiny\color{gray},
+	numbersep=8pt,
+	xleftmargin=1.5em,
+	xrightmargin=1.5em,
+	upquote=true,
+	showstringspaces=false,
+	basicstyle=\ttfamily,
+	columns=fullflexible,
+	keepspaces=true,
+	emph={True,False,None,self},
+	emphstyle={\color{slateblue}},
+	frame=trBL,
+	belowskip=1em,
+	aboveskip=1em,
+	captionpos=b
+}
+
+% Shell command formatting
+\lstdefinelanguage{shell}{
+	basicstyle=\ttfamily,
+	columns=fullflexible,
+	keepspaces=true,
+	upquote=true,
+	showstringspaces=false,
+	xleftmargin=1.5em,
+	xrightmargin=1.5em,
+	frame=trBL,
+	belowskip=1em,
+	aboveskip=1em
+}
+\lstnewenvironment{shellcmd}{\lstset{language=shell,literate={`}{\$}1}}{}
+
+\lstset{language=mypython}
+
+\title{Getting started with the marimo notebook}
+\subtitle{For educators}
+\author{Akshay Agrawal \\ \texttt{akshayka@cs.stanford.edu}}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Python notebooks}
+
+\paragraph{Python notebooks.} A notebook is a type of program in which code is
+organized in a sequence of code blocks, called \emph{cells}.
+A Python notebook is a notebook in which each cell is Python code.
+
+Cells are typically displayed in a graphical user interface, or \emph{editor}, that
+lets you edit their code and execute them interactively. Unlike traditional
+Python scripts, which run from start to finish without human intervention,
+notebooks allow you to execute a section of code and inspect the execution
+results — at which point you may choose to execute another cell, modify 
+code, or otherwise author entirely new cells. In this way notebooks allow you
+to author programs or explore data incrementally, using intermediate execution
+results as feedback for what to author next, which can be of great help when
+working with data.
+
+\paragraph{Outputs.} The last expression of a cell is its \emph{output}, which
+is visualized by the editor below the cell. Outputs can be arbitrary Python
+objects. When working through this primer, you will frequently output
+plots, matrices, and other data structures.
+
+For example, this cell visualizes a matplotlib plot:
+
+\begin{lstlisting}
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.plot(np.array([0, 1, 2]))
+plt.gca()
+\end{lstlisting}
+In this code block, the cell visualizes a plot by outtputing \verb|plt.gca()|
+(``get current axes'') in line 5.
+
+\paragraph{Markdown.} In addition to Python, notebooks allow you to document
+your work with \emph{Markdown}. Markdown is a simple markup language for
+formatted text. It is common to intersperse cells with expository
+Markdown that explains work or demarcates sections. Markdown is
+very widely used, and there are many free tutorials available online that
+teach its syntax. Nearly all Markdown implementations in notebooks also allow
+you to write mathematical notation with \LaTeX.
+
+\paragraph{Documents.} A notebook, consisting of cells, outputs, and Markdown,
+can be interpreted as a \emph{document}, in addition to a program. Notebook
+editors allow you to export your notebook as a standalone HTML or PDF
+file that can be shared with others.
+
+\paragraph{Traditional notebooks.} Traditional notebooks are similar to
+read-eval-print loops, or REPLs. In a traditional notebook, running a cell
+imperatively mutates memory, without running dependent cells. As a result,
+notebooks accumulate \emph{hidden state}. This means that code and outputs can
+easily become out of sync; for example, the code on the page may say \texttt{x
+= 0}, but depending on what cells were run previously, an output may show a
+different value for \texttt{x}, such as \texttt{1}. The accumulation of hidden
+state is not only confusing (and different from other interactive programming models,
+such as spreadsheets), it has also contributed to a reproducibility crisis in
+research,
+\href{https://leomurta.github.io/papers/pimentel2019a.pdf}{documented} in
+\href{https://blog.jetbrains.com/datalore/2020/12/17/we-downloaded-10-000-000-jupyter-notebooks-from-github-this-is-what-we-learned/}{various
+studies}.
+
+The most well-known traditional notebook is the Jupyter notebook, running with
+the IPython kernel. While Jupyter notebooks have been widely used in research
+and industry, they suffer from additional problems, including a lack of reusability,
+incompatibility with version control, and difficult-to-use interactive widgets.
+
+\section{The marimo notebook}
+
+This primer is about the \emph{marimo} notebook. marimo (stylized in lowercase)
+is an open-source notebook designed specifically for the Python language.
+Unlike traditional notebooks, marimo keeps code and outputs in sync:
+run a cell and marimo automatically runs dependent cells (or lazily marks them
+as stale, your choice). This \emph{reactive execution} eliminates hidden
+state and hidden bugs, while also giving users immediate feedback as they edit
+and run cells. marimo solves widely-documented problems with traditional
+notebooks, including reproducibility (through reactive execution and package
+management), reusability (as Python modules and scripts), and interactivity
+(through easy-to-use UI elements like sliders).
+
+\paragraph{Designed for educators and researchers.} marimo was designed for
+educators and researchers \href{https://www.akshayagrawal.com}{by someone} who identifies as both, with \href{
+  https://marimo.io/blog/slac-marimo}{input from Stanford scientists} who
+sought a more interactive medium for computer science education and a more
+reproducible environment for computational research. In its original design,
+marimo drew significant inspriation from \texttt{Pluto.jl}, a reactive Julia
+notebook from MIT.
+
+\paragraph{Documentation.} marimo and its documentation are freely available at
+\begin{center}
+\url{https://docs.marimo.io}
+\end{center}
+The online documentation contains a quickstart, comprehensive user guides, and
+several examples.
+
+\paragraph{Code repository.} marimo is free and open-source, available under
+the Apache 2.0 License:
+\begin{center}
+  \url{https://github.com/marimo-team/marimo}.
+\end{center}
+We welcome feedback, which you may provide by opening an issue in our GitHub
+repository.
+
+\subsection{Setup}
+
+marimo can be used locally, through our open-source software package, or online,
+through our free cloud-hosted marimo notebook service called molab. In this subsection
+we provide setup guides for both, though molab is usually
+far easier for students to use than the local setup.
+
+\subsubsection{Local setup}
+
+marimo is open source and available on the Python Package Index and Conda Forge.
+You can install marimo with any Python package manager, such as \texttt{uv}, \texttt{pip},
+or \texttt{conda}. For example:
+
+\begin{shellcmd}
+` pip install marimo
+\end{shellcmd}
+In the remainder of this section, we provide simple instructions on how to get
+started with marimo on your local machine. While we focus on using marimo's
+browser-based editor, marimo also has a VS Code extension, which you can find
+online in the VS Code and Cursor marketplaces.
+
+
+\paragraph{Installing Python.}
+First, install the \verb|uv| package manager following the instructions available on
+its website, \url{https://docs.astral.sh/uv/}.
+Then, install Python with
+\begin{shellcmd}
+` uv python install 3.13 --default
+\end{shellcmd}
+This adds the installed version of Python to your system \verb|PATH|, letting
+you run Python from the command line with the \verb|python| command.
+
+\paragraph{Installing the marimo command-line interface.} The main entry point to marimo
+is the command-line interface (CLI). For simplicity, we recommend installing
+and invoking the marimo CLI using the \texttt{uvx} command:
+
+\begin{shellcmd}
+` uvx marimo
+\end{shellcmd}
+Here, \texttt{uvx} provides access to the marimo CLI, downloading it in an isolated environment
+if necessary before invoking it. If you and your students are familiar with
+virtual environments and Python projects, you can install and invoke marimo
+however you like, with or without \texttt{uv}/\texttt{uvx}.
+
+\paragraph{Running notebooks.}
+To create or edit an existing notebook, use the following command:
+
+\begin{shellcmd}
+` uvx marimo edit --sandbox my_notebook.py
+\end{shellcmd}
+This opens marimo's browser-based editor, which provides a fully featured programming
+environment for working with marimo notebooks. To run a notebook server capable
+of opening and editing multiple notebooks, run the \texttt{edit} command
+without a filename:
+
+\begin{shellcmd}
+` uvx marimo edit --sandbox 
+\end{shellcmd}
+To learn more about marimo's editor, visit
+
+\begin{center}
+  \url{https://docs.marimo.io/guides/editor_features}.
+\end{center}
+
+
+\paragraph{Installing third-party packages.}
+marimo comes with a built-in user interface for package management. When a user imports
+a library such as \texttt{numpy}, they are prompted by the marimo editor to install it. If the notebook
+was started with the \texttt{--sandbox} flag, marimo will do something more: it will
+record the installed package (and its version) as metadata in the notebook file.
+The next time the notebook is run, marimo will automatically run it in temporary
+isolated virtual environment (a ``sandbox'') containing just those packages.
+This eliminates the error-prone task of managing a pyproject.toml or
+requirements.txt file, while also guaranteeing that that your notebook won't
+fail because of missing packages.
+
+To learn more about marimo's package management features, visit
+
+\begin{center}
+\url{https://docs.marimo.io/guides/package_management/}
+\end{center}
+
+\paragraph{Convert Jupyter notebooks to marimo notebooks.} Convert a Jupyter notebook
+to a marimo notebook with:
+
+\begin{shellcmd}
+` uvx marimo convert my_notebook.ipynb -o my_notebook.py
+\end{shellcmd}
+To learn more about migrating from Jupyter, visit
+
+\begin{center}
+  \url{https://docs.marimo.io/guides/coming_from/jupyter/}
+\end{center}
+
+\subsubsection{Online setup}
+
+molab, marimo's free cloud-hosted notebook service, is the easiest way for
+students to get up and running with marimo:
+\begin{center}
+\url{https://molab.marimo.io/notebooks}
+\end{center}
+It is especially useful for
+students who are uncomfortable using their machine's command line or installing Python, since
+it makes marimo accessible as a self-contained web application. If you are
+familiar with Google Colab, you will find molab's product experience similar,
+but with all the benefits that marimo has over traditional notebooks.
+
+\paragraph{Sharing notebooks.} Notebooks created on molab are public but not
+discoverable by default, and can be shared with others by URL. Students can
+also download their notebooks from molab, in marimo's own format or as ipynb
+or PDFs, making it easy for them to submit their work to grading systems such
+as Gradescope.
+
+\paragraph{Preview notebooks hosted on GitHub.} Visit
+
+\begin{center}
+  \url{https://molab.marimo.io/github}
+\end{center}
+to preview notebooks hosted on GitHub as molab notebooks. This service
+provides a unique URL for your notebook that remains up-to-date even as your
+notebook changes on GitHub. Here is a sample preview created by the service:
+
+\begin{center}
+\small \url{https://molab.marimo.io/github/marimo-team/marimo/blob/main/marimo/_tutorials/intro.py}
+\end{center}
+If you store homework notebooks on GitHub, this provides a convenient way to
+share the most up-to-date versions of your notebooks with your students. From
+the preview page, students can fork the notebook into their own workspace.
+
+\subsection{Concepts}
+In this subsection, we explain the basic concepts of marimo, with an emphasis on how it is
+different from traditional notebooks.
+
+\paragraph{Built-in tutorials.} marimo comes packaged with interactive tutorials that
+are themselves marimo notebooks. As an alternative to reading this subsection, students 
+may prefer stepping through the built-in tutorials. To open the introductory
+tutorial, run
+\begin{shellcmd}
+` uvx marimo tutorial intro
+\end{shellcmd}
+from the command line. To see a list of all tutorials, run
+\begin{shellcmd}
+` uvx marimo tutorial --help
+\end{shellcmd}
+
+
+\subsubsection{Reactive execution} When a cell is run, marimo reacts by
+automatically running all other cells that reference any of the variables it
+defines; delete a cell and marimo invalidates other cells that depended on its
+variables. This reactive execution keeps code and outputs in sync, eliminating
+hidden state and along with it a large class of silent bugs associated with
+traditional notebooks. Reactive execution also gives students immediate feedback,
+which can greatly increase learning outcomes.
+
+For notebooks with long-running cells, you may choose to configure marimo to
+run cells lazily, marking them as stale instead of automatically running them,
+through the notebook settings. Learn more about reactive execution at our
+documentation:
+
+\begin{center}
+  \url{https://docs.marimo.io/guides/reactivity/}
+\end{center}
+
+\subsubsection{Variables} In order to implement reactive
+execution, marimo imposes a constraint on your code: each variable must
+be defined in just one cell. If you accidentally define a variable in two (or
+more) cells, marimo will raise an error. For this reason, when using marimo you
+should define global variables sparingly, wrapping intermediate variable
+definitions in functions when possible. This not only enables reactivity, but
+it also results in better code.
+
+\paragraph{Local variables.} marimo's rule on variable naming has one exception. Variables that begin with
+an underscore are made \emph{local} to a cell, and as such their names can be
+bound in multiple cells. This is helpful for loop variables, which for
+example may be written as
+\begin{lstlisting}
+for _i in range(10):
+  print(_i)
+\end{lstlisting}
+
+\subsubsection{User interface elements} Marimo comes packaged with user interface
+(UI) elements like numerical sliders, dropdowns, and selectable scatterplots,
+and more. To create a UI element, you must first import the \verb|marimo|
+library into your notebook.
+\begin{lstlisting}
+import marimo as mo
+\end{lstlisting}
+
+UI elements are exposed through \verb|marimo|'s \verb|ui| module. Create a UI element
+assign it to a variable, and output it in the same cell.
+\begin{lstlisting}
+x = mo.ui.slider(start=1, stop=10, step=1, label="$x$")
+x
+\end{lstlisting}
+Access its associated value through the \verb|value| attribute in any cell
+other than the one defining the UI element.
+\begin{lstlisting}
+x.value
+\end{lstlisting}
+When you interact with a UI element (for example, sliding the knob of a slider), all other
+cells that reference the UI element will run automatically, thanks to reactive execution.
+
+Learn more about interactive elements at our documentation:
+\begin{center}
+  \url{https://docs.marimo.io/guides/intereactivity/}
+\end{center}
+
+\subsubsection{Testing} marimo has built-in support for pytest, providing a convenient way
+for you to provide students with sanity-checks for their code. Simply import \texttt{pytest} 
+at the beginning of your notebook; then, any cells that contain only functions starting
+with \texttt{test\_} will be evaluated by pytest. This can be used to provide students
+with descriptive and immediate feedback on the correctness of their code as they implement
+their function, guiding them to a correct solution without outright giving them the answer.
+
+A common pattern is the following. In one cell, provide a partial
+implementation of a function that a student needs to implement, such as:
+
+\begin{lstlisting}
+def add(x, y):
+  """A function that returns the sum of x and y."""
+  # BEGIN YOUR CODE
+  pass
+  # END YOUR CODE
+\end{lstlisting}
+Then, in another cell, write tests, such as:
+
+\begin{lstlisting}
+@pytest.mark.parametrize(
+    ("x", "y", "z"),
+    [
+        (5, 6, 11),
+        (2.1, 2.3, 4.4),
+    ],
+)
+def test_add(x, y, z):
+    assert add(x, y) == z
+
+def test_add_type():
+    assert isinstance(add(4, 2.1), float)
+\end{lstlisting}
+Whenever the student runs the cell defining `add`, the test cell will run and provide
+them with feedback.
+
+Learn more about testing at our documentation:
+\begin{center}
+  \url{https://docs.marimo.io/guides/testing/pytest/}
+\end{center}
+
+\subsubsection{Resuable functions and classes}
+\end{document}
