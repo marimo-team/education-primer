@@ -129,7 +129,7 @@ editors allow you to export your notebook as a standalone HTML or PDF
 file that can be shared with others.
 
 \paragraph{Traditional notebooks.} Traditional notebooks are similar to
-read-eval-print loops, or REPLs. In a traditional notebook, running a cell
+read-eval-print loops. In a traditional notebook, running a cell
 imperatively mutates memory, without running dependent cells. As a result,
 notebooks accumulate \emph{hidden state}. This means that code and outputs can
 easily become out of sync; for example, the code on the page may say \texttt{x
@@ -142,10 +142,11 @@ research,
 \href{https://blog.jetbrains.com/datalore/2020/12/17/we-downloaded-10-000-000-jupyter-notebooks-from-github-this-is-what-we-learned/}{various
 studies}.
 
-The most well-known traditional notebook is the Jupyter notebook, running with
-the IPython kernel. While Jupyter notebooks have been widely used in research
-and industry, they suffer from additional problems, including a lack of reusability,
-incompatibility with version control, and difficult-to-use interactive widgets.
+The most well-known traditional notebook is the Jupyter notebook, paired with
+the imperative IPython kernel. While Jupyter notebooks have been widely used in research
+and industry, they suffer not only from reproducibility issues but also from a
+lack of reusability, incompatibility with version control, and difficult-to-use
+interactive widgets.
 
 \section{The marimo notebook}
 
@@ -166,7 +167,7 @@ educators and researchers \href{https://www.akshayagrawal.com}{by someone} who i
 sought a more interactive medium for computer science education and a more
 reproducible environment for computational research. In its original design,
 marimo drew significant inspriation from \texttt{Pluto.jl}, a reactive Julia
-notebook from MIT.
+notebook from MIT designed for education.
 
 \paragraph{Documentation.} marimo and its documentation are freely available at
 \begin{center}
@@ -182,6 +183,12 @@ the Apache 2.0 License:
 \end{center}
 We welcome feedback, which you may provide by opening an issue in our GitHub
 repository.
+
+\paragraph{Examples.} A collection of example notebooks is available at our online gallery,
+at
+\begin{center}
+  \url{https://marimo.io/gallery}
+\end{center}
 
 \subsection{Setup}
 
@@ -314,7 +321,7 @@ the preview page, students can fork the notebook into their own workspace.
 
 \subsection{Concepts}
 In this subsection, we explain the basic concepts of marimo, with an emphasis on how it is
-different from traditional notebooks.
+different from traditional notebooks and on features relevant for education.
 
 \paragraph{Built-in tutorials.} marimo comes packaged with interactive tutorials that
 are themselves marimo notebooks. As an alternative to reading this subsection, students 
@@ -338,9 +345,8 @@ traditional notebooks. Reactive execution also gives students immediate feedback
 which can greatly increase learning outcomes.
 
 For notebooks with long-running cells, you may choose to configure marimo to
-run cells lazily, marking them as stale instead of automatically running them,
-through the notebook settings. Learn more about reactive execution at our
-documentation:
+run cells lazily, marking them as stale instead of automatically running them.
+Learn more about reactive execution at our documentation:
 
 \begin{center}
   \url{https://docs.marimo.io/guides/reactivity/}
@@ -384,14 +390,22 @@ x.value
 \end{lstlisting}
 When you interact with a UI element (for example, sliding the knob of a slider), all other
 cells that reference the UI element will run automatically, thanks to reactive execution.
+This makes it easy for students to rapidly answer what-if questions about data
+and algorithms: If I change this one input, how does that affect the output?
+For a rich interactive educational notebook, see this one from Stanford
+on signal decomposition:
+
+\begin{center}
+  \url{https://molab.marimo.io/notebooks/nb_3gk1j4rzKeFpz8rNwrVU5h/app}
+\end{center}
 
 Learn more about interactive elements at our documentation:
 \begin{center}
   \url{https://docs.marimo.io/guides/intereactivity/}
 \end{center}
 
-\subsubsection{Testing} marimo has built-in support for pytest, providing a convenient way
-for you to provide students with sanity-checks for their code. Simply import \texttt{pytest} 
+\subsubsection{Testing} marimo has built-in support for pytest, making it easy to
+provide students with sanity-checks for their code. Simply import \texttt{pytest} 
 at the beginning of your notebook; then, any cells that contain only functions starting
 with \texttt{test\_} will be evaluated by pytest. This can be used to provide students
 with descriptive and immediate feedback on the correctness of their code as they implement
@@ -423,7 +437,7 @@ def test_add(x, y, z):
 def test_add_type():
     assert isinstance(add(4, 2.1), float)
 \end{lstlisting}
-Whenever the student runs the cell defining `add`, the test cell will run and provide
+Whenever the student runs the cell defining \texttt{add}, the test cell will run and provide
 them with feedback.
 
 Learn more about testing at our documentation:
@@ -431,5 +445,20 @@ Learn more about testing at our documentation:
   \url{https://docs.marimo.io/guides/testing/pytest/}
 \end{center}
 
-\subsubsection{Resuable functions and classes}
+\subsubsection{Resuable functions and classes} marimo is stored as a pure Python program;
+not only does it make it easy to version notebooks with Git and edit in text editors,
+but it also enables code reuse, such as
+
+\begin{lstlisting}
+from my_notebook import my_function, MyClass
+\end{lstlisting}
+Such code reuse is impossible in traditional notebooks, which are either stored as JSON or
+(unlike marimo) execute the whole notebook on import. This is an advanced feature of marimo,
+and requires the use of a special cell called the \emph{setup cell}. Learn more
+about this feature at our documentation:
+
+\begin{center}
+  \url{https://docs.marimo.io/guides/reusing_functions/}
+\end{center}
+
 \end{document}
